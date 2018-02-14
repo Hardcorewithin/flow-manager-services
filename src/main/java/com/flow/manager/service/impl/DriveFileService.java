@@ -1,4 +1,4 @@
-package com.flow.manager.service.file.impl;
+package com.flow.manager.service.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,15 +14,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.flow.manager.dto.FileDTO;
-import com.flow.manager.service.auth.DriveAuth;
-import com.flow.manager.service.file.IFileService;
+import com.flow.manager.service.ServicesHandler;
 import com.google.api.client.util.Charsets;
 import com.google.api.services.drive.Drive.Files.Export;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 @Service
-public class DriveFileService implements IFileService {
+public class DriveFileService {
 
 	@Value("${drive.playlist.file.id}")
 	private String playlistDriveFileId;
@@ -31,7 +30,7 @@ public class DriveFileService implements IFileService {
 			LoggerFactory.getLogger(DriveFileService.class);
 	
 	@Autowired
-	private DriveAuth driveAuth;
+	private ServicesHandler servicesHandler;
 	
 	/**
 	 * Print a file's metadata.
@@ -40,9 +39,9 @@ public class DriveFileService implements IFileService {
 	 * @param fileId ID of the file to print metadata for.
 	 * @throws IOException 
 	 */
-	public void printFileList() throws IOException {
+/*	public void printFileList() throws IOException {
 		// Print the names and IDs for up to 10 files.
-		FileList result = driveAuth.getClient().files().list()
+		FileList result = servicesHandler.getDriveService().files().list()
 				.setPageSize(10)
 				.setFields("nextPageToken, files(id, name)")
 				.execute();
@@ -58,7 +57,7 @@ public class DriveFileService implements IFileService {
 	}
 
 	public void printCurrentPlayList() throws IOException {
-		Export s = driveAuth.getClient().files().export(playlistDriveFileId, "text/csv");
+		Export s = servicesHandler.getDriveService().files().export(playlistDriveFileId, "text/csv");
 		InputStream in=s.executeMediaAsInputStream();
 		InputStreamReader isr=new InputStreamReader(in,Charsets.UTF_8);
 		BufferedReader br = new BufferedReader(isr);
@@ -68,13 +67,12 @@ public class DriveFileService implements IFileService {
 			logger.info(line);
 		}
 		
-	}
+	}*/
 	
-	@Override
 	public List<String> loadPlaylistItems(FileDTO fileDTO) throws IOException {
 		List<String> playlistItems = new ArrayList<String>();
 
-		Export s = driveAuth.getClient().files().export(fileDTO.getFileId(), "text/csv");
+		Export s = servicesHandler.getDriveService().files().export(fileDTO.getFileId(), "text/csv");
 		InputStream in=s.executeMediaAsInputStream();
 		InputStreamReader isr=new InputStreamReader(in,Charsets.UTF_8);
 		BufferedReader br = new BufferedReader(isr);
