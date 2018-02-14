@@ -1,10 +1,11 @@
-package com.flow.manager.service.playlist.impl;
+package com.flow.manager.service.impl;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import com.flow.manager.constants.FlowManagerConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -14,9 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.flow.manager.dto.PlaylistDTO;
-import com.flow.manager.service.auth.YouTubeAuth;
-import com.flow.manager.service.file.IFileService;
-import com.flow.manager.service.playlist.IPlaylistService;
+import com.flow.manager.service.ServicesHandler;
+import com.flow.manager.service.PlaylistService;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Playlist;
@@ -27,20 +27,16 @@ import com.google.api.services.youtube.model.PlaylistStatus;
 import com.google.api.services.youtube.model.ResourceId;
 
 @Service
-public class YTPlaylistServiceImpl implements IPlaylistService{
+public class YTPlaylistServiceImpl implements PlaylistService {
 
 	private static final Logger logger =
 			LoggerFactory.getLogger(YTPlaylistServiceImpl.class);
-	
-	private static final String PLAYLIST_PRIVATE = "private";
-	private static final String PLAYLIST_PUBLIC = "public";
+
+	@Autowired
+	private DriveFileService fileService;
 	
 	@Autowired
-	private IFileService fileService;
-	
-	@Autowired
-	private YouTubeAuth youtubeAuth;
-	
+	private ServicesHandler servicesHandler;
 	
 	@Override
 	public PlaylistDTO create(PlaylistDTO playlist) {
@@ -68,6 +64,8 @@ public class YTPlaylistServiceImpl implements IPlaylistService{
 					}
 				});
 			}
+            String playlistUrl = FlowManagerConstants.YOUTUBE_PLAYLIST_BASE_URL+playListId;
+			playlist.setUrl(playlistUrl);
 
 		} catch (GoogleJsonResponseException e) {
 			logger.error("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
@@ -120,7 +118,7 @@ public class YTPlaylistServiceImpl implements IPlaylistService{
 		playlistSnippet.setDescription(playListTitle);
 		//TODO: to be specified as input
 		PlaylistStatus playlistStatus = new PlaylistStatus();
-		playlistStatus.setPrivacyStatus(PLAYLIST_PUBLIC);
+		playlistStatus.setPrivacyStatus(FlowManagerConstants.PLAYLIST_PUBLIC);
 
 		Playlist youTubePlaylist = new Playlist();
 		youTubePlaylist.setSnippet(playlistSnippet);
@@ -130,7 +128,7 @@ public class YTPlaylistServiceImpl implements IPlaylistService{
 		// argument identifies the resource parts that the API response should
 		// contain, and the second argument is the playlist being inserted.
 		YouTube.Playlists.Insert playlistInsertCommand =
-				youtubeAuth.getClient().playlists().insert("snippet,status", youTubePlaylist);
+				servicesHandler.getYouTubeService().playlists().insert("snippet,status", youTubePlaylist);
 		Playlist playlistInserted = playlistInsertCommand.execute();
 
 		// Print data from the API response and return the new playlist's
@@ -175,7 +173,7 @@ public class YTPlaylistServiceImpl implements IPlaylistService{
 		// that the API response should contain, and the second argument is
 		// the playlist item being inserted.
 		YouTube.PlaylistItems.Insert playlistItemsInsertCommand =
-				youtubeAuth.getClient().playlistItems().insert("snippet,contentDetails", playlistItem);
+				servicesHandler.getYouTubeService().playlistItems().insert("snippet,contentDetails", playlistItem);
 		PlaylistItem returnedPlaylistItem = playlistItemsInsertCommand.execute();
 
 		// Print data from the API response and return the new playlist
@@ -185,6 +183,7 @@ public class YTPlaylistServiceImpl implements IPlaylistService{
 		logger.info(" - Video id: " + returnedPlaylistItem.getSnippet().getResourceId().getVideoId());
 		logger.info(" - Posted: " + returnedPlaylistItem.getSnippet().getPublishedAt());
 		logger.info(" - Channel: " + returnedPlaylistItem.getSnippet().getChannelId());
+
 		return returnedPlaylistItem.getId();
 
 	}
