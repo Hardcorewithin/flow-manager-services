@@ -1,0 +1,17 @@
+version: '3'
+services:
+  web:
+    image: flow-manager/flow-manager-services
+    ports:
+     - "8080:8080"
+     - "8443:8443"
+    environment:
+      DRIVE_PLAYLIST_FILE_ID:
+      GOOGLE_CLIENT_ID:
+      GOOGLE_CLIENT_SECRET:
+      MONGODB_URI:
+      BOT_NAME:
+      BOT_TOKEN:
+      KEYSTOREPASSWORD:
+      USE_WEBHOOK: "false"
+      APP_HOSTNAME: localhost

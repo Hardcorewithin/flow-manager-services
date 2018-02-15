@@ -17,17 +17,8 @@ public class BotInitializer {
 
     private static final String LOGTAG = "BotInitializer";
 
-    //private FlowManagerBot flowManagerBot;
-
     @Autowired
     private FlowManagerBot flowManagerBot;
-
-/*
-    @PostConstruct
-    private void initFlowManagerBot () {
-        flowManagerBot = this._flowManagerBot;
-    }
-*/
 
     public void init(){
 

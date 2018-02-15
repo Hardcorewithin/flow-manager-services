@@ -26,12 +26,12 @@ public class TokenRepositoryTest {
         Token token1= new Token("refresh111","access111","Bob");
         Token token2= new Token("refresh222","access222","Alice");
         //save product, verify has ID value after save
-        //assertNull(token1.getId());
-        //assertNull(token2.getId());//null before save
+        assertNull(token1.getUserId());
+        assertNull(token2.getUserId());//null before save
         this.tokenRepository.save(token1);
         this.tokenRepository.save(token2);
-        //assertNotNull(token1.getId());
-        //assertNotNull(token2.getId());
+        assertNotNull(token1.getUserId());
+        assertNotNull(token2.getUserId());
     }
 
     @Test

@@ -6,16 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "tokens")
 public class Token {
 
-/*    @Id
-    public String id;
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }*/
-
     private String refreshToken;
     private String accessToken;
 
@@ -34,8 +24,6 @@ public class Token {
         this.refreshToken = refreshToken;
         this.accessToken = accessToken;
     }
-
-
 
     public String getRefreshToken() {
         return refreshToken;

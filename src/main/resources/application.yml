@@ -1,4 +1,4 @@
-oauth2.redirect.uri: https://${HOSTNAME}:${server.https.port}/flow-manager/oauth2Callback
+application.name: Flow Manager
 
 server:
   #port: 8080
@@ -14,21 +14,28 @@ server:
     key-store-type: JKS
     key-store-password: ${KEYSTOREPASSWORD}
 
-external.webhook.url: https://${HOSTNAME}:${server.https.port}
-internal.webhook.url: https://${HOSTNAME}:${server.https.port}
+external.webhook.url: https://${APP_HOSTNAME}:${server.https.port}
+internal.webhook.url: https://${APP_HOSTNAME}:${server.https.port}
 
 info.app.maven.version: @pom.version@
 info.app.maven.artifactId: @pom.artifactId@
 info.app.maven.groupId: @pom.groupId@
 
 logging.config: classpath:logback.xml
-application.name: Flow Manager
 
-security.basic.enabled: false
+security:
+  basic:
+    enabled: false
+#  user:
+#    name: ${SPRING_USERNAME}
+#    password: ${SPRING_PASSWORD}
+
+oauth2.redirect.uri: https://${APP_HOSTNAME}:${server.https.port}/flow-manager/oauth2Callback
+spring.data.mongodb.uri: ${MONGODB_URI}
 
 bot:
-  name: ${BOT_NAME} #REPLACE WITH YOUR BOT NAME
-  token: ${BOT_TOKEN} #REPLACE WITH YOUR BOT TOKEN
+  name: ${BOT_NAME}
+  token: ${BOT_TOKEN}
   use_webhook: ${USE_WEBHOOK}
 
 drive:
@@ -47,39 +54,3 @@ google:
   resource:
     userInfoUri: https://www.googleapis.com/oauth2/v3/userinfo
     preferTokenInfo: true
-
-spring.data.mongodb.uri: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DB}
-
-spring:
-  profiles:
-    active: dev
-
-
----
-spring:
-  profiles: dev
-
-# MONGODB (MongoProperties)
-MONGODB_USER:
-MONGODB_PASSWORD:
-MONGODB_DB:
-MONGODB_HOST:
-
-#ONLY FOR DEV
-GOOGLE_CLIENT_ID:
-GOOGLE_CLIENT_SECRET:
-BOT_NAME:
-BOT_TOKEN:
-USE_WEBHOOK: false
-DRIVE_PLAYLIST_FILE_ID:
-HOSTNAME: localhost
-KEYSTOREPASSWORD:
-
----
-spring:
-  profiles: prod
-
-MONGODB_USER:
-MONGODB_PASSWORD:
-MONGODB_DB:
-MONGODB_HOST:
