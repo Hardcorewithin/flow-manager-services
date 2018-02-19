@@ -9,7 +9,7 @@ server:
     enabled: true
     key-alias: localhost
     key-password: ${KEYSTOREPASSWORD}
-    key-store: classpath:flowManagerBot.jks
+    key-store: classpath:private/flowManagerBot.jks
     key-store-provider: SUN
     key-store-type: JKS
     key-store-password: ${KEYSTOREPASSWORD}

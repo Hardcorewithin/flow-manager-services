@@ -38,15 +38,17 @@ public class AuthServiceImpl {
         }
     }
 
-
 	public static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-	public static String authorize() throws Exception {
+	public static String authorize(String userId, Long chatId) throws Exception {
+
+	    String state = userId+"#"+chatId;
 
 		GoogleAuthorizationCodeFlow flow = initFlow();
         AuthorizationCodeRequestUrl authorizationUrl = flow.newAuthorizationUrl()
 				.setAccessType("offline")
-                .setApprovalPrompt("auto")
+                .setState(state)
+                .setApprovalPrompt("force")
 				.setRedirectUri(AppProperties.REDIRECT_URI);
 
         logger.debug("drive authorization Url ->" + authorizationUrl);
@@ -65,25 +67,30 @@ public class AuthServiceImpl {
 				.build();
 	}
 
-     public Credential getCredentials() throws IOException {
-	    //TODO: check that the user is in the db and the token is valid
-         Token token = tokenRepository.findByUserId(FlowManagerConstants.USER_ID);
+     public Credential getCredentials(String userId) throws IOException {
+
+         Token token = tokenRepository.findByUserId(userId);
+         if(token == null) return null;
 
          GoogleCredential credential = new GoogleCredential.Builder().setTransport(AuthServiceImpl.HTTP_TRANSPORT)
                  .setJsonFactory(AuthServiceImpl.JSON_FACTORY)
                  .setClientSecrets(AppProperties.GOOGLE_CLIENT_ID, AppProperties.GOOGLE_CLIENT_SECRET)
                  .build()
                  .setRefreshToken(token.getRefreshToken())
-                 .setAccessToken(token.getAccessToken())
-         ;
+                 .setAccessToken(token.getAccessToken());
+
         return credential;
     }
 
-    public void storeCredentials(String authToken) throws IOException {
+    public void storeCredentials(String code, String state) throws IOException {
+
+	    String userId = state.split("#")[0];
+	    Long chatId = Long.valueOf(state.split("#")[1]);
 
         GoogleAuthorizationCodeFlow flow = initFlow();
-        GoogleTokenResponse tokenResponse = flow.newTokenRequest(authToken).setRedirectUri(AppProperties.REDIRECT_URI).execute();
-        Token token = new Token(tokenResponse.getRefreshToken(),tokenResponse.getAccessToken(),FlowManagerConstants.USER_ID);
+        GoogleTokenResponse tokenResponse = flow.newTokenRequest(code).setRedirectUri(AppProperties.REDIRECT_URI).execute();
+        Token token = new Token(tokenResponse.getRefreshToken(),tokenResponse.getAccessToken(),userId,chatId);
+
         tokenRepository.save(token);
     }
 

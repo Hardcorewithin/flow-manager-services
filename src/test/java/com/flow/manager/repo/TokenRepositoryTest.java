@@ -1,7 +1,6 @@
-package com.flow.manager;
+package com.flow.manager.repo;
 
 import com.flow.manager.repo.entity.Token;
-import com.flow.manager.repo.TokenRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,17 +20,16 @@ public class TokenRepositoryTest {
     @Autowired
     private TokenRepository tokenRepository;
 
+    private Token token1;
+    private Token token2;
+
     @Before
     public void setUp() throws Exception {
-        Token token1= new Token("refresh111","access111","Bob");
-        Token token2= new Token("refresh222","access222","Alice");
-        //save product, verify has ID value after save
-        assertNull(token1.getUserId());
-        assertNull(token2.getUserId());//null before save
+        token1 = new Token("refresh111","access111","Bob", 1L);
+        token2 = new Token("refresh222","access222","Alice",2L);
         this.tokenRepository.save(token1);
         this.tokenRepository.save(token2);
-        assertNotNull(token1.getUserId());
-        assertNotNull(token2.getUserId());
+        assertEquals(2,tokenRepository.findAll().size());
     }
 
     @Test
@@ -39,15 +37,8 @@ public class TokenRepositoryTest {
         /*Test data retrieval*/
         Token token1 = tokenRepository.findByUserId("Bob");
         assertNotNull(token1);
-        assertEquals("access111", token1.getAccessToken());
         assertEquals("refresh111", token1.getRefreshToken());
-        /*Get all products, list should only have two*/
-        Iterable<Token> tokens = tokenRepository.findAll();
-        int count = 0;
-        for(Token t : tokens){
-            count++;
-        }
-        assertEquals(count, 2);
+        assertEquals("access111", token1.getAccessToken());
     }
 
     @Test
@@ -66,6 +57,7 @@ public class TokenRepositoryTest {
 
     @After
     public void tearDown() throws Exception {
-        this.tokenRepository.deleteAll();
+        this.tokenRepository.delete(token1);
+        this.tokenRepository.delete(token2);
     }
 }

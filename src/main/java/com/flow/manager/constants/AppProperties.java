@@ -29,6 +29,7 @@ public class AppProperties {
     public static boolean USE_WEBHOOK = false;
     public static String EXTERNALWEBHOOKURL; // https://(xyz.)externaldomain.tld
     public static String INTERNALWEBHOOKURL; // https://(xyz.)localip/domain(.tld)
+    public static String YOUTUBE_CHANNEL_ID;
 
 
     /*@Value("${SPRING_PASSWORD}")
@@ -105,4 +106,10 @@ public class AppProperties {
     private void setBotToken(String botToken){
         AppProperties.BOT_TOKEN = botToken;
     }
+
+    @Value("${YOUTUBE_CHANNEL_ID}")
+    private void setYoutubeChannelId(String youtubeChannelId){
+        AppProperties.YOUTUBE_CHANNEL_ID = youtubeChannelId;
+    }
+
 }

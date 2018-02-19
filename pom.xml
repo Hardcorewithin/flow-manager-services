@@ -15,7 +15,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.5.10.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repo -->
 	</parent>
 
 	<properties>
@@ -29,7 +29,7 @@
 		<google.api>1.23.0</google.api>
 		<http.common>4.5</http.common>
 		<google.oauth.client.jetty>1.23.0</google.oauth.client.jetty>
-		<google.api.services.drive>v3-rev94-1.23.0</google.api.services.drive>
+		<google.api.services.drive>v3-rev103-1.23.0</google.api.services.drive>
 		<apache.commons.lang>3.0</apache.commons.lang>
 		<google.collections>1.0</google.collections>
 		<junit.version>4.12</junit.version>

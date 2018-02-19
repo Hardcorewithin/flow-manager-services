@@ -3,9 +3,14 @@ package com.flow.manager.service.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
+import com.flow.manager.constants.AppProperties;
 import com.flow.manager.constants.FlowManagerConstants;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.youtube.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -19,53 +24,65 @@ import com.flow.manager.service.ServicesHandler;
 import com.flow.manager.service.PlaylistService;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.Playlist;
-import com.google.api.services.youtube.model.PlaylistItem;
-import com.google.api.services.youtube.model.PlaylistItemSnippet;
-import com.google.api.services.youtube.model.PlaylistSnippet;
-import com.google.api.services.youtube.model.PlaylistStatus;
-import com.google.api.services.youtube.model.ResourceId;
 
 @Service
-public class YTPlaylistServiceImpl implements PlaylistService {
+public class PlaylistServiceImpl implements PlaylistService {
 
 	private static final Logger logger =
-			LoggerFactory.getLogger(YTPlaylistServiceImpl.class);
+			LoggerFactory.getLogger(PlaylistServiceImpl.class);
 
-	@Autowired
-	private DriveFileService fileService;
+
+    @Autowired
+	private FileServiceImpl fileService;
 	
 	@Autowired
 	private ServicesHandler servicesHandler;
-	
+
 	@Override
-	public PlaylistDTO create(PlaylistDTO playlist) {
-		
-		logger.info("creating playlist: " + playlist.getTitle());
-		
+    public PlaylistDTO create(PlaylistDTO playlist,String userId) {
+
+        if( playlist.getPlatform() == null) playlist.setPlatform("youtube") ;
+
+        switch(playlist.getPlatform()){
+            case FlowManagerConstants.YOUTUBE:
+                playlist = createYoutubePlaylist(playlist, userId);
+                break;
+            default:
+                break;
+        }
+        return playlist;
+    }
+
+    private PlaylistDTO createYoutubePlaylist(PlaylistDTO playlist, String userId) {
+
 		try {
-			
-			//Load video urls from the file, if successfull go on
-			List<String> videoList = fileService.loadPlaylistItems();
+			retrieveAndSetPlaylistTitle(playlist);
 
-			// Create a new, private playlist in the authorized user's channel.
-			String playlistTitle = playlist.getTitle();
-			String playListId = insertPlaylist(playlistTitle);
+            playlist = checkPlaylistExist(playlist);
 
-			if(videoList!=null) {
-				videoList.forEach(videoUrl->{
-					try {
-						String videoId = getVideoId(videoUrl);
-						insertPlaylistItem(playListId, videoId);
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
-					}
-				});
+			if(StringUtils.isEmpty(playlist.getUrl()) && !playlist.doesExist()){
+
+                logger.info("creating playlist: " + playlist.getTitle());
+
+                List<String> videoList = fileService.loadPlaylistItemsFromDriveFile();
+
+                String playListId = insertPlaylist(playlist.getTitle());
+
+				if(videoList!=null) {
+					videoList.forEach(videoUrl->{
+						try {
+							String videoId = getVideoId(videoUrl);
+							insertPlaylistItem(playListId, videoId);
+						} catch (IOException e) {
+							e.printStackTrace();
+						} catch (URISyntaxException e) {
+							e.printStackTrace();
+						}
+					});
+				}
+				playlist.setUrl(playListId);
+
 			}
-            String playlistUrl = FlowManagerConstants.YOUTUBE_PLAYLIST_BASE_URL+playListId;
-			playlist.setUrl(playlistUrl);
 
 		} catch (GoogleJsonResponseException e) {
 			logger.error("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
@@ -79,10 +96,46 @@ public class YTPlaylistServiceImpl implements PlaylistService {
 		}
 
 		return playlist;
-	}	
-	
-	
-	private String getVideoId(String videoUrl) throws URISyntaxException {
+	}
+
+    private void retrieveAndSetPlaylistTitle(PlaylistDTO playlist) throws IOException {
+	    String playlistTitle = fileService.retrievePlaylistTitleFromDriveFile();
+        playlist.setTitle(playlistTitle);
+    }
+
+    private PlaylistDTO checkPlaylistExist(PlaylistDTO playlist) throws IOException {
+
+        playlist.setExist(false);
+
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("part", "snippet");
+        parameters.put("channelId", AppProperties.YOUTUBE_CHANNEL_ID);
+        parameters.put("maxResults", "20");
+
+        try{
+           YouTube.Playlists.List playlistsListByChannelIdRequest = ServicesHandler.youtube.playlists().list(parameters.get("part").toString());
+           playlistsListByChannelIdRequest.setChannelId(parameters.get("channelId").toString());
+           playlistsListByChannelIdRequest.setMaxResults(Long.parseLong(parameters.get("maxResults").toString()));
+
+           PlaylistListResponse response = playlistsListByChannelIdRequest.execute();
+
+           Optional<Playlist> result = response.getItems().stream()
+                   .filter(item -> item.getSnippet().getTitle().equals(playlist.getTitle()))
+                   .findFirst();
+           if(result.isPresent()){
+               playlist.setExist(true);
+               playlist.setUrl(result.get().getId());
+           }
+
+       }catch(Exception ex){
+           ex.printStackTrace();
+       }
+
+        return playlist;
+    }
+
+
+    private String getVideoId(String videoUrl) throws URISyntaxException {
 		String videoId = null;
 		List<NameValuePair> params = null;
 		URI videoUri = new URI(videoUrl);
@@ -110,13 +163,9 @@ public class YTPlaylistServiceImpl implements PlaylistService {
 	 */
 	private String insertPlaylist(String playListTitle) throws IOException {
 
-		// This code constructs the playlist resource that is being inserted.
-		// It defines the playlist's title, description, and privacy status.
 		PlaylistSnippet playlistSnippet = new PlaylistSnippet();
 		playlistSnippet.setTitle(playListTitle);
-		//TODO: to be specified as input
 		playlistSnippet.setDescription(playListTitle);
-		//TODO: to be specified as input
 		PlaylistStatus playlistStatus = new PlaylistStatus();
 		playlistStatus.setPrivacyStatus(FlowManagerConstants.PLAYLIST_PUBLIC);
 
@@ -124,20 +173,17 @@ public class YTPlaylistServiceImpl implements PlaylistService {
 		youTubePlaylist.setSnippet(playlistSnippet);
 		youTubePlaylist.setStatus(playlistStatus);
 
-		// Call the API to insert the new playlist. In the API call, the first
-		// argument identifies the resource parts that the API response should
-		// contain, and the second argument is the playlist being inserted.
 		YouTube.Playlists.Insert playlistInsertCommand =
-				servicesHandler.getYouTubeService().playlists().insert("snippet,status", youTubePlaylist);
+                ServicesHandler.youtube.playlists().insert("snippet,status", youTubePlaylist);
 		Playlist playlistInserted = playlistInsertCommand.execute();
 
-		// Print data from the API response and return the new playlist's
-		// unique playlist ID.
-		logger.info("New Playlist name: " + playlistInserted.getSnippet().getTitle());
-		logger.info(" - Privacy: " + playlistInserted.getStatus().getPrivacyStatus());
-		logger.info(" - Description: " + playlistInserted.getSnippet().getDescription());
-		logger.info(" - Posted: " + playlistInserted.getSnippet().getPublishedAt());
-		logger.info(" - Channel: " + playlistInserted.getSnippet().getChannelId() + "\n");
+		if(logger.isDebugEnabled()){
+            logger.debug("New Playlist name: " + playlistInserted.getSnippet().getTitle());
+            logger.debug(" - Privacy: " + playlistInserted.getStatus().getPrivacyStatus());
+            logger.debug(" - Description: " + playlistInserted.getSnippet().getDescription());
+            logger.debug(" - Posted: " + playlistInserted.getSnippet().getPublishedAt());
+            logger.debug(" - Channel: " + playlistInserted.getSnippet().getChannelId() + "\n");
+        }
 
 		return playlistInserted.getId();
 	}
@@ -173,7 +219,7 @@ public class YTPlaylistServiceImpl implements PlaylistService {
 		// that the API response should contain, and the second argument is
 		// the playlist item being inserted.
 		YouTube.PlaylistItems.Insert playlistItemsInsertCommand =
-				servicesHandler.getYouTubeService().playlistItems().insert("snippet,contentDetails", playlistItem);
+                ServicesHandler.youtube.playlistItems().insert("snippet,contentDetails", playlistItem);
 		PlaylistItem returnedPlaylistItem = playlistItemsInsertCommand.execute();
 
 		// Print data from the API response and return the new playlist

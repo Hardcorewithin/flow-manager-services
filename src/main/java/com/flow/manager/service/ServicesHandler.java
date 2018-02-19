@@ -17,20 +17,27 @@ public class ServicesHandler {
 	@Autowired
 	private AuthServiceImpl authService;
 
-	public Drive getDriveService() throws IOException {
-		Credential credential = authService.getCredentials();
-		Drive client = new Drive.Builder(AuthServiceImpl.HTTP_TRANSPORT, AuthServiceImpl.JSON_FACTORY, credential)
+	public boolean initServices(String userId) throws IOException {
+
+	    Credential credential = authService.getCredentials(userId);
+
+	    YouTube _youtube = new YouTube.Builder(AuthServiceImpl.HTTP_TRANSPORT, AuthServiceImpl.JSON_FACTORY, credential)
 				.setApplicationName(FlowManagerConstants.APPLICATION_NAME)
 				.build();
 
-		return client;
+	    Drive _drive = new Drive.Builder(AuthServiceImpl.HTTP_TRANSPORT, AuthServiceImpl.JSON_FACTORY, credential)
+                .setApplicationName(FlowManagerConstants.APPLICATION_NAME)
+                .build();
+
+        if(_youtube == null || _drive == null) return false;
+
+        this.youtube = _youtube;
+        this.drive = _drive;
+
+		return true;
 	}
 
-	public YouTube getYouTubeService() throws IOException {
-		Credential credential = authService.getCredentials();
-		YouTube client = new YouTube.Builder(AuthServiceImpl.HTTP_TRANSPORT, AuthServiceImpl.JSON_FACTORY, credential)
-				.setApplicationName(FlowManagerConstants.APPLICATION_NAME)
-				.build();
-		return client;
-	}
+	public static YouTube youtube;
+
+	public static Drive drive;
 }
