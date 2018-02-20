@@ -1,11 +1,10 @@
 package com.flow.manager.bot;
 
 import com.flow.manager.constants.AppProperties;
-import com.flow.manager.dto.PlaylistDTO;
+import com.flow.manager.dto.PlaylistDto;
 import com.flow.manager.service.PlaylistService;
 import com.flow.manager.service.impl.AuthServiceImpl;
 import com.flow.manager.service.ServicesHandler;
-import com.google.api.services.youtube.YouTube;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class FlowManagerBot extends TelegramLongPollingBot {
     private ServicesHandler servicesHandler;
 
     @Autowired
-    private PlaylistDTO playlistDTO;
+    private PlaylistDto playlistDto;
 
     @Autowired
     private PlaylistService playlistServiceImpl;
@@ -94,13 +93,13 @@ public class FlowManagerBot extends TelegramLongPollingBot {
                     if(servicesHandler.initServices(userId)){
 
                         String textMessage ="";
-                        //playlistDTO.setPlatform(platform);//TODO: To change when there will be more than 1 platform for generating the playlist
-                        playlistDTO = playlistServiceImpl.create(playlistDTO,userId);
+                        //playlistDto.setPlatform(platform);//TODO: To change when there will be more than 1 platform for generating the playlist
+                        playlistDto = playlistServiceImpl.create(playlistDto,userId);
 
-                        if(playlistDTO.doesExist()){
-                            textMessage = "playlist gia esistente esistente: " + playlistDTO.getUrl();
-                        }else if(!playlistDTO.doesExist()){
-                            textMessage = "playlist creata: " + playlistDTO.getUrl();
+                        if(playlistDto.doesExist()){
+                            textMessage = "playlist gia esistente: " + playlistDto.getUrl();
+                        }else if(!playlistDto.doesExist()){
+                            textMessage = "playlist creata: " + playlistDto.getUrl();
                         }
                         else{
                             textMessage = "errore durante la creazione della playlist";
@@ -174,11 +173,11 @@ public class FlowManagerBot extends TelegramLongPollingBot {
                     if(servicesHandler.initServices(userId)){
 
                         String platform = call_data.split("_")[1];
-                        playlistDTO.setPlatform(platform);//get the platform
-                        playlistDTO = playlistServiceImpl.create(playlistDTO,userId);
+                        playlistDto.setPlatform(platform);//get the platform
+                        playlistDto = playlistServiceImpl.create(playlistDto,userId);
 
                         message.setChatId(chat_id)
-                                .setText("playlist creata: " + playlistDTO.getUrl());
+                                .setText("playlist creata: " + playlistDto.getUrl());
                     }else{
                         message.setChatId(chat_id)
                                 .setText("Operazione non effettuata. " +

@@ -1,7 +1,5 @@
 package com.flow.manager.constants;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,6 +8,8 @@ public class AppProperties {
 
     public static final String pathToCertificatePublicKey = "private/flowManagerBot.pem"; //only for self-signed webhooks
     public static final String pathToCertificateStore = "private/flowManagerBot.jks"; //self-signed and non-self-signed.
+
+    public static String APPLICATION_NAME;
 
     public static String AUTH_URI;
     public static String TOKEN_URI;
@@ -20,9 +20,6 @@ public class AppProperties {
     public static String HTTPS_PORT;
     public static String CERTIFICATE_STORE_PASSWORD; //password for your certificate-store
 
-    //public static String SPRING_USERNAME;
-    //public static String SPRING_PASSWORD;
-    
     //configure telegram bot
     public static String BOT_NAME;
     public static String BOT_TOKEN;
@@ -30,17 +27,7 @@ public class AppProperties {
     public static String EXTERNALWEBHOOKURL; // https://(xyz.)externaldomain.tld
     public static String INTERNALWEBHOOKURL; // https://(xyz.)localip/domain(.tld)
     public static String YOUTUBE_CHANNEL_ID;
-
-
-    /*@Value("${SPRING_PASSWORD}")
-    private void setSpringPassword(String springPassword){
-        AppProperties.SPRING_PASSWORD = springPassword;
-    }
-    
-    @Value("${SPRING_USERNAME}")
-    private void setSpringUsername(String springUsername){
-        AppProperties.SPRING_USERNAME = springUsername;
-    }*/
+    public static String DRIVE_PLAYLIST_FILE_ID;
     
     @Value("${KEYSTOREPASSWORD}")
     private void setCertificateStorePassword(String certificateStorePassword){
@@ -92,24 +79,34 @@ public class AppProperties {
         AppProperties.AUTH_URI = authUri;
     }
 
-    @Value("${bot.use_webhook}")
+    @Value("${USE_WEBHOOK}")
     private void setUseWebhook(boolean useWebHook){
         AppProperties.USE_WEBHOOK = useWebHook;
     }
 
-    @Value("${bot.name}")
+    @Value("${BOT_NAME}")
     private void setBotName(String botName){
         AppProperties.BOT_NAME = botName;
     }
 
-    @Value("${bot.token}")
+    @Value("${BOT_TOKEN}")
     private void setBotToken(String botToken){
         AppProperties.BOT_TOKEN = botToken;
+    }
+
+    @Value("${DRIVE_PLAYLIST_FILE_ID}")
+    private void setDrivePlaylistFileId(String drivePlaylistFileId){
+        AppProperties.DRIVE_PLAYLIST_FILE_ID = drivePlaylistFileId;
     }
 
     @Value("${YOUTUBE_CHANNEL_ID}")
     private void setYoutubeChannelId(String youtubeChannelId){
         AppProperties.YOUTUBE_CHANNEL_ID = youtubeChannelId;
+    }
+
+    @Value("${application.name}")
+    private void setApplicationName(String applicationName){
+        AppProperties.APPLICATION_NAME = applicationName;
     }
 
 }

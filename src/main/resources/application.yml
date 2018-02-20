@@ -7,7 +7,7 @@ server:
   port: 8443
   ssl:
     enabled: true
-    key-alias: localhost
+    key-alias: ${APP_HOSTNAME}
     key-password: ${KEYSTOREPASSWORD}
     key-store: classpath:private/flowManagerBot.jks
     key-store-provider: SUN
@@ -26,22 +26,9 @@ logging.config: classpath:logback.xml
 security:
   basic:
     enabled: false
-#  user:
-#    name: ${SPRING_USERNAME}
-#    password: ${SPRING_PASSWORD}
 
 oauth2.redirect.uri: https://${APP_HOSTNAME}:${server.https.port}/flow-manager/oauth2Callback
 spring.data.mongodb.uri: ${MONGODB_URI}
-
-bot:
-  name: ${BOT_NAME}
-  token: ${BOT_TOKEN}
-  use_webhook: ${USE_WEBHOOK}
-
-drive:
-  playlist:
-    file:
-      id: ${DRIVE_PLAYLIST_FILE_ID}
 
 google:
   client:

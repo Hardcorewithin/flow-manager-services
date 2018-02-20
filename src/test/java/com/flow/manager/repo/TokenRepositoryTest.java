@@ -25,11 +25,12 @@ public class TokenRepositoryTest {
 
     @Before
     public void setUp() throws Exception {
+        int currentSize = tokenRepository.findAll().size();
         token1 = new Token("refresh111","access111","Bob", 1L);
         token2 = new Token("refresh222","access222","Alice",2L);
         this.tokenRepository.save(token1);
         this.tokenRepository.save(token2);
-        assertEquals(2,tokenRepository.findAll().size());
+        assertEquals(currentSize+2,tokenRepository.findAll().size());
     }
 
     @Test

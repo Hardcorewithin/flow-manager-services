@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.flow.manager.constants.AppProperties;
-import com.flow.manager.constants.FlowManagerConstants;
-import com.google.api.services.drive.Drive;
+import com.flow.manager.constants.AppConstants;
 import com.google.api.services.youtube.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
@@ -19,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.flow.manager.dto.PlaylistDTO;
+import com.flow.manager.dto.PlaylistDto;
 import com.flow.manager.service.ServicesHandler;
 import com.flow.manager.service.PlaylistService;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -39,12 +38,12 @@ public class PlaylistServiceImpl implements PlaylistService {
 	private ServicesHandler servicesHandler;
 
 	@Override
-    public PlaylistDTO create(PlaylistDTO playlist,String userId) {
+    public PlaylistDto create(PlaylistDto playlist, String userId) {
 
         if( playlist.getPlatform() == null) playlist.setPlatform("youtube") ;
 
         switch(playlist.getPlatform()){
-            case FlowManagerConstants.YOUTUBE:
+            case AppConstants.YOUTUBE:
                 playlist = createYoutubePlaylist(playlist, userId);
                 break;
             default:
@@ -53,7 +52,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         return playlist;
     }
 
-    private PlaylistDTO createYoutubePlaylist(PlaylistDTO playlist, String userId) {
+    private PlaylistDto createYoutubePlaylist(PlaylistDto playlist, String userId) {
 
 		try {
 			retrieveAndSetPlaylistTitle(playlist);
@@ -98,12 +97,12 @@ public class PlaylistServiceImpl implements PlaylistService {
 		return playlist;
 	}
 
-    private void retrieveAndSetPlaylistTitle(PlaylistDTO playlist) throws IOException {
+    private void retrieveAndSetPlaylistTitle(PlaylistDto playlist) throws IOException {
 	    String playlistTitle = fileService.retrievePlaylistTitleFromDriveFile();
         playlist.setTitle(playlistTitle);
     }
 
-    private PlaylistDTO checkPlaylistExist(PlaylistDTO playlist) throws IOException {
+    private PlaylistDto checkPlaylistExist(PlaylistDto playlist) throws IOException {
 
         playlist.setExist(false);
 
@@ -167,7 +166,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 		playlistSnippet.setTitle(playListTitle);
 		playlistSnippet.setDescription(playListTitle);
 		PlaylistStatus playlistStatus = new PlaylistStatus();
-		playlistStatus.setPrivacyStatus(FlowManagerConstants.PLAYLIST_PUBLIC);
+		playlistStatus.setPrivacyStatus(AppConstants.PLAYLIST_PUBLIC);
 
 		Playlist youTubePlaylist = new Playlist();
 		youTubePlaylist.setSnippet(playlistSnippet);

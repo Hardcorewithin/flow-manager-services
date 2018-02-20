@@ -2,11 +2,11 @@ package com.flow.manager.dto;
 
 import java.io.Serializable;
 
-import com.flow.manager.constants.FlowManagerConstants;
+import com.flow.manager.constants.AppConstants;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PlaylistDTO implements Serializable{
+public class PlaylistDto implements Serializable{
 
 	private String title;
 	private String url;
@@ -18,7 +18,7 @@ public class PlaylistDTO implements Serializable{
     }
 
     public void setUrl(String url) {
-        this.url = FlowManagerConstants.YOUTUBE_PLAYLIST_BASE_URL + url;
+        this.url = AppConstants.YOUTUBE_PLAYLIST_BASE_URL + url;
     }
 
     public String getTitle() {

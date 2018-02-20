@@ -3,7 +3,7 @@ package com.flow.manager.service.impl;
 import java.io.IOException;
 
 import com.flow.manager.constants.AppProperties;
-import com.flow.manager.constants.FlowManagerConstants;
+import com.flow.manager.constants.AppConstants;
 import com.flow.manager.repo.entity.Token;
 import com.flow.manager.repo.TokenRepository;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
@@ -63,7 +63,7 @@ public class AuthServiceImpl {
                 JSON_FACTORY,
                 AppProperties.GOOGLE_CLIENT_ID,
                 AppProperties.GOOGLE_CLIENT_SECRET,
-                FlowManagerConstants.FM_SCOPES)
+                AppConstants.FM_SCOPES)
 				.build();
 	}
 

@@ -2,7 +2,7 @@ package com.flow.manager.service;
 
 import java.io.IOException;
 
-import com.flow.manager.constants.FlowManagerConstants;
+import com.flow.manager.constants.AppProperties;
 import com.flow.manager.service.impl.AuthServiceImpl;
 import com.google.api.client.auth.oauth2.Credential;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +22,11 @@ public class ServicesHandler {
 	    Credential credential = authService.getCredentials(userId);
 
 	    YouTube _youtube = new YouTube.Builder(AuthServiceImpl.HTTP_TRANSPORT, AuthServiceImpl.JSON_FACTORY, credential)
-				.setApplicationName(FlowManagerConstants.APPLICATION_NAME)
+				.setApplicationName(AppProperties.APPLICATION_NAME)
 				.build();
 
 	    Drive _drive = new Drive.Builder(AuthServiceImpl.HTTP_TRANSPORT, AuthServiceImpl.JSON_FACTORY, credential)
-                .setApplicationName(FlowManagerConstants.APPLICATION_NAME)
+                .setApplicationName(AppProperties.APPLICATION_NAME)
                 .build();
 
         if(_youtube == null || _drive == null) return false;

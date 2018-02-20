@@ -27,7 +27,7 @@ public class FileServiceImplTest {
     @Before
     public void onSetup(){
         try{
-            servicesHandler.initServices("hardcorewithin");
+            servicesHandler.initServices("testuser");
         }catch(Exception ex){
             ex.printStackTrace();
         }
@@ -51,7 +51,7 @@ public class FileServiceImplTest {
 
         try {
             List<String> playlistItems = driveFileService.loadPlaylistItemsFromDriveFile();
-            assertEquals(2,playlistItems.size());
+            assertEquals(4,playlistItems.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
