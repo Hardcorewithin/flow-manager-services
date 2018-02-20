@@ -50,7 +50,7 @@ public class FlowManagerBot extends TelegramLongPollingBot {
             long chat_id = update.getMessage().getChatId();
             String userId = update.getMessage().getFrom().getUserName();
 
-            if (update.getMessage().getText().equals("/start")) {
+            if (update.getMessage().getText().startsWith("/start")) {
 
                     SendMessage message = new SendMessage() // Create a message object object
                             .setChatId(chat_id)
@@ -84,7 +84,7 @@ public class FlowManagerBot extends TelegramLongPollingBot {
                         logger.error("Errore durante l'invio del messaggio /start",e);
                     }
 
-            } else if (message_text.equals("/playlist")) {
+            } else if (message_text.startsWith("/playlist")) {
 
                 SendMessage message = new SendMessage() // Create a message object object
                         .setChatId(chat_id)
