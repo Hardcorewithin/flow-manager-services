@@ -1,18 +1,17 @@
 application.name: Flow Manager
 
 server:
-  #port: 8080
   http.port: 8080
   https.port: 8443
-  port: 8443
-  ssl:
-    enabled: true
-    key-alias: ${APP_HOSTNAME}
-    key-password: ${KEYSTOREPASSWORD}
-    key-store: classpath:private/flowManagerBot.jks
-    key-store-provider: SUN
-    key-store-type: JKS
-    key-store-password: ${KEYSTOREPASSWORD}
+  port: 8080
+#  ssl:
+#    enabled: true
+#    key-alias: ${APP_HOSTNAME}
+#    key-password: ${KEYSTOREPASSWORD}
+#    key-store: classpath:private/flowManagerBot.jks
+#    key-store-provider: SUN
+#    key-store-type: JKS
+#    key-store-password: ${KEYSTOREPASSWORD}
 
 external.webhook.url: https://${APP_HOSTNAME}:${server.https.port}
 internal.webhook.url: https://${APP_HOSTNAME}:${server.https.port}
@@ -27,7 +26,7 @@ security:
   basic:
     enabled: false
 
-oauth2.redirect.uri: https://${APP_HOSTNAME}:${server.https.port}/flow-manager/oauth2Callback
+oauth2.redirect.uri: http://${APP_HOSTNAME}:${server.port}/flow-manager/oauth2Callback
 spring.data.mongodb.uri: ${MONGODB_URI}
 
 google:
