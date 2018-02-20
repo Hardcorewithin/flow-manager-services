@@ -38,13 +38,13 @@ public class PlaylistServiceImpl implements PlaylistService {
 	private ServicesHandler servicesHandler;
 
 	@Override
-    public PlaylistDto create(PlaylistDto playlist, String userId) {
+    public PlaylistDto create(PlaylistDto playlist) {
 
         if( playlist.getPlatform() == null) playlist.setPlatform("youtube") ;
 
         switch(playlist.getPlatform()){
             case AppConstants.YOUTUBE:
-                playlist = createYoutubePlaylist(playlist, userId);
+                playlist = createYoutubePlaylist(playlist);
                 break;
             default:
                 break;
@@ -52,7 +52,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         return playlist;
     }
 
-    private PlaylistDto createYoutubePlaylist(PlaylistDto playlist, String userId) {
+    private PlaylistDto createYoutubePlaylist(PlaylistDto playlist) {
 
 		try {
 			retrieveAndSetPlaylistTitle(playlist);

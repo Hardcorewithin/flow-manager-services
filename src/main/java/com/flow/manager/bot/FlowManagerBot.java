@@ -92,9 +92,11 @@ public class FlowManagerBot extends TelegramLongPollingBot {
                 try{
                     if(servicesHandler.initServices(userId)){
 
+                        playlistDto = new PlaylistDto();
+
                         String textMessage ="";
                         //playlistDto.setPlatform(platform);//TODO: To change when there will be more than 1 platform for generating the playlist
-                        playlistDto = playlistServiceImpl.create(playlistDto,userId);
+                        playlistDto = playlistServiceImpl.create(playlistDto);
 
                         if(playlistDto.doesExist()){
                             textMessage = "playlist gia esistente: " + playlistDto.getUrl();
@@ -171,10 +173,11 @@ public class FlowManagerBot extends TelegramLongPollingBot {
                 try{
 
                     if(servicesHandler.initServices(userId)){
+                        playlistDto = new PlaylistDto();
 
                         String platform = call_data.split("_")[1];
                         playlistDto.setPlatform(platform);//get the platform
-                        playlistDto = playlistServiceImpl.create(playlistDto,userId);
+                        playlistDto = playlistServiceImpl.create(playlistDto);
 
                         message.setChatId(chat_id)
                                 .setText("playlist creata: " + playlistDto.getUrl());

@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface PlaylistService {
 
-	public PlaylistDto create(PlaylistDto playlist, String userId);
+	public PlaylistDto create(PlaylistDto playlist);
 }

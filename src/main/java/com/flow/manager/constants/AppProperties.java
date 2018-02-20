@@ -29,7 +29,7 @@ public class AppProperties {
     public static String YOUTUBE_CHANNEL_ID;
     public static String DRIVE_PLAYLIST_FILE_ID;
     
-    @Value("${KEYSTOREPASSWORD}")
+    @Value("${KEYSTOREPASSWORD:notused}")
     private void setCertificateStorePassword(String certificateStorePassword){
         AppProperties.CERTIFICATE_STORE_PASSWORD = certificateStorePassword;
     }
@@ -79,7 +79,7 @@ public class AppProperties {
         AppProperties.AUTH_URI = authUri;
     }
 
-    @Value("${USE_WEBHOOK}")
+    @Value("${USE_WEBHOOK:false}")
     private void setUseWebhook(boolean useWebHook){
         AppProperties.USE_WEBHOOK = useWebHook;
     }
