@@ -54,7 +54,7 @@ public class AppProperties {
         AppProperties.HTTP_PORT = httpServerPort;
     }
 
-    @Value("${oauth2.redirect.uri}")
+    @Value("${OAUTH2_REDIRECT_URI}")
     private void setRedirectUri(String redirectUri){
         AppProperties.REDIRECT_URI = redirectUri;
     }

@@ -26,7 +26,6 @@ security:
   basic:
     enabled: false
 
-oauth2.redirect.uri: http://${APP_HOSTNAME}:${server.port}/flow-manager/oauth2Callback
 spring.data.mongodb.uri: ${MONGODB_URI}
 
 google:
