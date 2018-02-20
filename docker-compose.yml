@@ -15,3 +15,5 @@ services:
       KEYSTOREPASSWORD:
       USE_WEBHOOK: "false"
       APP_HOSTNAME: localhost
+      YOUTUBE_CHANNEL_ID: 
+      OAUTH2_REDIRECT_URI:
