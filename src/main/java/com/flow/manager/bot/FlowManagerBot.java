@@ -54,7 +54,7 @@ public class FlowManagerBot extends TelegramLongPollingBot {
 
                     SendMessage message = new SendMessage() // Create a message object object
                             .setChatId(chat_id)
-                            .setText("Clicca su \"Authorize me\" per autorizzare \""+AppProperties.BOT_NAME+"\"");
+                            .setText("@"+userId+" Clicca su \"Authorize me\" per autorizzare \""+AppProperties.BOT_NAME+"\"");
 
                     String authorizeUrl = null;
                     try {
@@ -86,9 +86,8 @@ public class FlowManagerBot extends TelegramLongPollingBot {
 
             } else if (message_text.startsWith("/playlist")) {
 
-                SendMessage message = new SendMessage() // Create a message object object
-                        .setChatId(chat_id)
-                        .setText("Youtube");
+                SendMessage message = new SendMessage();
+
                 try{
                     if(servicesHandler.initServices(userId)){
 
@@ -211,11 +210,11 @@ public class FlowManagerBot extends TelegramLongPollingBot {
 
         SendMessage message = new SendMessage() // Create a message object object
                 .setChatId(chatId)
-                .setText("Autorizzazione effettuata con successo (\'"+userId+"\'), ora puoi usare " + AppProperties.BOT_NAME);
+                .setText("@"+userId+" Autorizzazione effettuata con successo, ora puoi usare " + AppProperties.BOT_NAME);
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            logger.error("Errore durante l'invio del messaggio /start", e);
+            logger.error("@"+userId+" - Errore durante l'invio del messaggio /start", e);
         }
 
     }

@@ -37,7 +37,31 @@ public class ServicesHandler {
 		return true;
 	}
 
-	public static YouTube youtube;
+	private YouTube youtube;
 
-	public static Drive drive;
+	private Drive drive;
+
+	public AuthServiceImpl getAuthService() {
+		return authService;
+	}
+
+	public void setAuthService(AuthServiceImpl authService) {
+		this.authService = authService;
+	}
+
+	public YouTube getYoutube() {
+		return youtube;
+	}
+
+	public void setYoutube(YouTube youtube) {
+		this.youtube = youtube;
+	}
+
+	public Drive getDrive() {
+		return drive;
+	}
+
+	public void setDrive(Drive drive) {
+		this.drive = drive;
+	}
 }

@@ -102,33 +102,66 @@ public class PlaylistServiceImpl implements PlaylistService {
         playlist.setTitle(playlistTitle);
     }
 
+    private String getMyYoutubeChannelID(){
+
+        String channelId=null;
+
+        try {
+
+            HashMap<String, String> parameters = new HashMap<>();
+            parameters.put("part", "snippet,contentDetails");
+            parameters.put("mine", "true");
+
+            YouTube.Channels.List channelsListManagedByMeRequest = servicesHandler.getYoutube().channels().list(parameters.get("part").toString());
+            if (parameters.containsKey("mine") && parameters.get("mine") != "") {
+                boolean mine = Boolean.valueOf(parameters.get("mine"));
+                channelsListManagedByMeRequest.setMine(mine);
+            }
+
+            ChannelListResponse response = channelsListManagedByMeRequest.execute();
+            channelId = response.getItems().get(0).getId();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return channelId;
+    }
+
     private PlaylistDto checkPlaylistExist(PlaylistDto playlist) throws IOException {
 
         playlist.setExist(false);
 
-        HashMap<String, String> parameters = new HashMap<>();
-        parameters.put("part", "snippet");
-        parameters.put("channelId", AppProperties.YOUTUBE_CHANNEL_ID);
-        parameters.put("maxResults", "20");
+        String channelId = getMyYoutubeChannelID();
 
-        try{
-           YouTube.Playlists.List playlistsListByChannelIdRequest = ServicesHandler.youtube.playlists().list(parameters.get("part").toString());
-           playlistsListByChannelIdRequest.setChannelId(parameters.get("channelId").toString());
-           playlistsListByChannelIdRequest.setMaxResults(Long.parseLong(parameters.get("maxResults").toString()));
+        if(StringUtils.isEmpty(channelId)) return playlist;
+        else{
+            logger.info("ChannelId Found : " + channelId);
 
-           PlaylistListResponse response = playlistsListByChannelIdRequest.execute();
+            HashMap<String, String> parameters = new HashMap<>();
+            parameters.put("part", "snippet");
+            parameters.put("channelId", channelId);
+            parameters.put("maxResults", "20");
 
-           Optional<Playlist> result = response.getItems().stream()
-                   .filter(item -> item.getSnippet().getTitle().equals(playlist.getTitle()))
-                   .findFirst();
-           if(result.isPresent()){
-               playlist.setExist(true);
-               playlist.setUrl(result.get().getId());
-           }
+            try{
+                YouTube.Playlists.List playlistsListByChannelIdRequest = servicesHandler.getYoutube().playlists().list(parameters.get("part").toString());
+                playlistsListByChannelIdRequest.setChannelId(parameters.get("channelId").toString());
+                playlistsListByChannelIdRequest.setMaxResults(Long.parseLong(parameters.get("maxResults").toString()));
 
-       }catch(Exception ex){
-           ex.printStackTrace();
-       }
+                PlaylistListResponse response = playlistsListByChannelIdRequest.execute();
+
+                Optional<Playlist> result = response.getItems().stream()
+                        .filter(item -> item.getSnippet().getTitle().equals(playlist.getTitle()))
+                        .findFirst();
+                if(result.isPresent()){
+                    playlist.setExist(true);
+                    playlist.setUrl(result.get().getId());
+                }
+
+            }catch(Exception ex){
+                ex.printStackTrace();
+            }
+        }
 
         return playlist;
     }
@@ -173,7 +206,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 		youTubePlaylist.setStatus(playlistStatus);
 
 		YouTube.Playlists.Insert playlistInsertCommand =
-                ServicesHandler.youtube.playlists().insert("snippet,status", youTubePlaylist);
+                servicesHandler.getYoutube().playlists().insert("snippet,status", youTubePlaylist);
 		Playlist playlistInserted = playlistInsertCommand.execute();
 
 		if(logger.isDebugEnabled()){
@@ -218,7 +251,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 		// that the API response should contain, and the second argument is
 		// the playlist item being inserted.
 		YouTube.PlaylistItems.Insert playlistItemsInsertCommand =
-                ServicesHandler.youtube.playlistItems().insert("snippet,contentDetails", playlistItem);
+                servicesHandler.getYoutube().playlistItems().insert("snippet,contentDetails", playlistItem);
 		PlaylistItem returnedPlaylistItem = playlistItemsInsertCommand.execute();
 
 		// Print data from the API response and return the new playlist

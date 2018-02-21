@@ -29,7 +29,7 @@ public class FileServiceImpl implements FileService {
 
 	public void printCurrentPlayList() throws IOException {
 
-		Export s = ServicesHandler.drive.files().export(AppProperties.DRIVE_PLAYLIST_FILE_ID, "text/csv");
+		Export s = servicesHandler.getDrive().files().export(AppProperties.DRIVE_PLAYLIST_FILE_ID, "text/csv");
 		InputStream in=s.executeMediaAsInputStream();
 		InputStreamReader isr=new InputStreamReader(in,Charsets.UTF_8);
 		BufferedReader br = new BufferedReader(isr);
@@ -41,7 +41,7 @@ public class FileServiceImpl implements FileService {
 	}
 
     public String retrievePlaylistTitleFromDriveFile() throws IOException {
-        Export s = ServicesHandler.drive.files().export(AppProperties.DRIVE_PLAYLIST_FILE_ID, "text/csv");
+        Export s = servicesHandler.getDrive().files().export(AppProperties.DRIVE_PLAYLIST_FILE_ID, "text/csv");
         InputStream in=s.executeMediaAsInputStream();
         InputStreamReader isr=new InputStreamReader(in,Charsets.UTF_8);
         BufferedReader br = new BufferedReader(isr);
@@ -65,7 +65,7 @@ public class FileServiceImpl implements FileService {
     public List<String> loadPlaylistItemsFromDriveFile() throws IOException {
 		List<String> playlistItems = new ArrayList<String>();
 
-		Export s = ServicesHandler.drive.files().export(AppProperties.DRIVE_PLAYLIST_FILE_ID, "text/csv");
+		Export s = servicesHandler.getDrive().files().export(AppProperties.DRIVE_PLAYLIST_FILE_ID, "text/csv");
 		InputStream in=s.executeMediaAsInputStream();
 		InputStreamReader isr=new InputStreamReader(in,Charsets.UTF_8);
 		BufferedReader br = new BufferedReader(isr);
