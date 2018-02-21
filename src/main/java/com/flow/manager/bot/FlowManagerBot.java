@@ -5,6 +5,7 @@ import com.flow.manager.dto.PlaylistDto;
 import com.flow.manager.service.PlaylistService;
 import com.flow.manager.service.impl.AuthServiceImpl;
 import com.flow.manager.service.ServicesHandler;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +100,7 @@ public class FlowManagerBot extends TelegramLongPollingBot {
 
                         if(playlistDto.doesExist()){
                             textMessage = "playlist gia esistente: " + playlistDto.getUrl();
-                        }else if(!playlistDto.doesExist()){
+                        }else if(!playlistDto.doesExist() && !StringUtils.isEmpty(playlistDto.getUrl())){
                             textMessage = "playlist creata: " + playlistDto.getUrl();
                         }
                         else{
