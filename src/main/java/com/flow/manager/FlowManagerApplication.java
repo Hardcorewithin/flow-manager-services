@@ -53,12 +53,12 @@ public class FlowManagerApplication {
                 scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
                                                                  @Override
                                                                  public void run() {
-                                                                     logger.info("PING DB");
+                                                                     logger.info("Ping database");
                                                                      tokenRepository.findByUserId("ping");
                                                                  }
                                                              },
                         1, 10,
-                        TimeUnit.SECONDS
+                        TimeUnit.MINUTES
                 );
 
     }

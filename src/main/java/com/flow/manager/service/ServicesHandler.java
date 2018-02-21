@@ -21,6 +21,8 @@ public class ServicesHandler {
 
 	    Credential credential = authService.getCredentials(userId);
 
+	    if(credential == null) return false;
+
 	    YouTube _youtube = new YouTube.Builder(AuthServiceImpl.HTTP_TRANSPORT, AuthServiceImpl.JSON_FACTORY, credential)
 				.setApplicationName(AppProperties.APPLICATION_NAME)
 				.build();

@@ -110,8 +110,8 @@ public class FlowManagerBot extends TelegramLongPollingBot {
                                 .setText(textMessage);
                     }else{
                         message.setChatId(chat_id)
-                                .setText("Errore durante il recupero delle credenziali." +
-                                        "Riprova ad effettuare l'autorizzazione dal comando /start.");
+                                .setText("@"+userId+" non registrato," +
+                                        "riprova ad effettuare l'autorizzazione dal comando /start.");
                     }
                 }catch(IOException e){
                     e.printStackTrace();
